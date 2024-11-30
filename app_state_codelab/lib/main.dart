@@ -1,65 +1,60 @@
 import 'package:flutter/material.dart';
-import 'package:scoped_model/scoped_model.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(MyEphemeralApp());
 
-class CounterModel extends Model {
-  int _counter = 0;
-
-  int get counter => _counter;
-
-  void increment() {
-    _counter++;
-    notifyListeners();
-  }
-
-  void decrement() {
-    _counter--;
-    notifyListeners();
-  }
-}
-
-class MyApp extends StatelessWidget {
-  final CounterModel model = CounterModel();
-
+class MyEphemeralApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ScopedModel<CounterModel>(
-      model: model,
-      child: MaterialApp(
-        home: Scaffold(
-          appBar: AppBar(title: Text('Scoped Model Example')),
-          body: CounterWidget(),
-        ),
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: Text('Ephemeral State Example')),
+        body: CounterWidget(),
       ),
     );
   }
 }
 
-class CounterWidget extends StatelessWidget {
+class CounterWidget extends StatefulWidget {
+  @override
+  _CounterWidgetState createState() => _CounterWidgetState();
+}
+
+class _CounterWidgetState extends State<CounterWidget> {
+  int _counter = 0;
+
   @override
   Widget build(BuildContext context) {
-    return ScopedModelDescendant<CounterModel>(
-      builder: (context, child, model) => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('Counter Value: ${model.counter}'),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                model.increment();
-              },
-              child: Text('Increment'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                model.decrement();
-              },
-              child: Text('Decrement'),
-            ),
-          ],
-        ),
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Text('Counter Value: $_counter'),
+          SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    if (_counter > 0) {
+                      _counter--;
+                    }
+                  });
+                },
+                child: Text('Decrement'),
+              ),
+              SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _counter++;
+                  });
+                },
+                child: Text('Increment'),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
